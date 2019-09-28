@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 700674527}
   - component: {fileID: 700674525}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: PlayerCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -242,6 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef6cff50a5035b04498d4e4bd1734e55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _moveInput: {x: 0, y: 0, z: 0}
   _cameraOriginalClampX: {x: -360, y: 360}
   _cameraOriginalClampY: {x: -50, y: 70}
   _cameraPitchRotationAmount: 1.5
@@ -252,20 +253,20 @@ MonoBehaviour:
   attack: 0
   disarm_throw: 0
   sheathe_unsheathe: 0
+  _running: 0
   _jumping: 0
   _dodging: 0
   _grounded: 0
-  _currentControllerXZSpeed: 0
-  _currentControllerYSpeed: 0
+  _currentControllerSpeedXZ: 0
+  _currentControllerSpeedY: 0
   _currentSelectedSpeed: 0
-  _runSpeed: 5
-  _runAccelerationForwardSpeed: 0
-  _runAccelerationSidesSpeed: 0
-  _runDeccelerationSpeed: 0
-  _slideDeccelerationSpeed: 0
-  _slopeSlideDownSpeed: 0
-  _slopeSlideDownAccelerationSpeed: 0
-  _slopeSlideUpDeccelerationSpeed: 0
+  _lastRecordedDirection: {x: 0, y: 0, z: 0}
+  _walkSpeed: 2
+  _runForwardSpeed: 7.5
+  _runPositiveDiagonalSpeed: 6.5
+  _runOtherDirectionsSpeed: 5.5
+  _runAccelerationSpeed: 10
+  _runDeccelerationSpeed: 20
   _jumpImpulse: 5
   _maxFallingSpeed: 30
   _gravity: 0
@@ -299,7 +300,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 3.45, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 963194228}
+  - {fileID: 1387342147}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -405,7 +406,6 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
-  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -472,31 +472,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.512, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 700674528}
+  m_Father: {fileID: 1387342147}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &963194229
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9898d09688165af44a909096a324e2d0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1104286989
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,6 +520,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1387342146
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1387342147}
+  m_Layer: 0
+  m_Name: CameraBobber
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1387342147
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1387342146}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 963194228}
+  m_Father: {fileID: 700674528}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2024627970
 GameObject:
