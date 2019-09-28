@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerControllerCore : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
+#pragma warning disable 0649
     [Header("Controller Components")]
     private CharacterController playerCC;
     private Camera playerCamera;
@@ -13,7 +13,7 @@ public class PlayerControllerCore : MonoBehaviour
     [Space(10)]
 
     [Header("Player Input")]
-    [SerializeField]private Vector3 _moveInput;
+    private Vector3 _moveInput;
     private Vector2 _rotateInput;
 
     [Space(10)]
@@ -44,10 +44,7 @@ public class PlayerControllerCore : MonoBehaviour
     public bool move;
     public bool rotate;
     public bool jump_dodge;
-    public bool crouch;
     public bool attack;
-    public bool disarm_throw;
-    public bool sheathe_unsheathe;
 
     [Header("Player States")]
     [SerializeField] private bool _running;
@@ -72,16 +69,6 @@ public class PlayerControllerCore : MonoBehaviour
     }
 
     [Header("Controller Speed Values", order = 0)]
-    [Header("Current Speed", order = 1)]
-    [SerializeField] private float _currentControllerSpeedXZ;
-    [SerializeField] private float _currentControllerSpeedY;
-
-    [SerializeField] private float _currentSelectedSpeed;
-
-    [SerializeField] private Vector3 _lastRecordedDirection;
-
-    [Space(5)]
-
     [Header("Ground Speed", order = 2)]
     [SerializeField] private float _walkSpeed;
     [SerializeField] private float _runForwardSpeed;
@@ -98,6 +85,15 @@ public class PlayerControllerCore : MonoBehaviour
     [SerializeField] private float _maxFallingSpeed;
     [SerializeField] private float _gravity;
     [SerializeField] private float _gravityMultiplier;
+
+    [Header("Current Speed", order = 4)]
+    private float _currentControllerSpeedXZ;
+    private float _currentControllerSpeedY;
+
+    private float _currentSelectedSpeed;
+
+    private Vector3 _lastRecordedDirection;
+
 
     [Space(5)]
 
@@ -120,7 +116,7 @@ public class PlayerControllerCore : MonoBehaviour
 
     [Header("Actions and Events")]
     private Action onGroundedValueChange;
-
+#pragma warning restore 0649
 
     // Start is called before the first frame update
     void Start() => StartValuesSet();
