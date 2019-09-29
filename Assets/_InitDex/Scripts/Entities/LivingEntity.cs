@@ -20,6 +20,12 @@ public class LivingEntity : MonoBehaviour, IDamagable
     Coroutine RegenCoroutine;
 
 
+    protected virtual void Start()
+    {
+        Health = MaxHealth;
+    }
+
+
     public void Heal(float pointsToHeal)
     {
         if (Health + pointsToHeal <= MaxHealth)

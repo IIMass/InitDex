@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     private CharacterController playerCC;
     private Camera playerCamera;
 
+    //private Animator modelAnimator;
+
     [Space(10)]
 
     [Header("Player Input")]
@@ -69,7 +71,7 @@ public class PlayerController : MonoBehaviour
     }
 
     [Header("Controller Speed Values", order = 0)]
-    [Header("Ground Speed", order = 2)]
+    [Header("Ground Speed", order = 1)]
     [SerializeField] private float _walkSpeed;
     [SerializeField] private float _runForwardSpeed;
     [SerializeField] private float _runPositiveDiagonalSpeed;
@@ -80,13 +82,13 @@ public class PlayerController : MonoBehaviour
 
     [Space(5)]
 
-    [Header("Jump and Gravity Speed", order = 3)]
+    [Header("Jump and Gravity Speed", order = 2)]
     [SerializeField] private float _jumpImpulse;
     [SerializeField] private float _maxFallingSpeed;
     [SerializeField] private float _gravity;
     [SerializeField] private float _gravityMultiplier;
 
-    [Header("Current Speed", order = 4)]
+    [Header("Current Speed", order = 3)]
     private float _currentControllerSpeedXZ;
     private float _currentControllerSpeedY;
 
@@ -126,6 +128,7 @@ public class PlayerController : MonoBehaviour
         // Get Components
         playerCC = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
+        //modelAnimator = GetComponentInChildren<SkinnedMeshRenderer>().GetComponentInParent<Animator>();
 
         // Lock Mouse
         Cursor.lockState = CursorLockMode.Locked;
@@ -166,7 +169,7 @@ public class PlayerController : MonoBehaviour
 
         if (_jumping)
         {
-            if (!_dodging && Grounded && _moveInput != Vector3.zero)
+            if (!_dodging && Grounded)
             {
                 Dodge();
             }
@@ -220,13 +223,15 @@ public class PlayerController : MonoBehaviour
     {
         SpeedSelection();
 
-        if (_moveInput != Vector3.zero && !_dodging) _lastRecordedDirection = transform.TransformDirection(_moveInput);
+        if (!_dodging && _moveInput != Vector3.zero)
+            _lastRecordedDirection = transform.TransformDirection(_moveInput);
+
 
         Vector3 XZMovement = _currentControllerSpeedXZ * _lastRecordedDirection;
         Vector3 YMovement = new Vector3(0f, _currentControllerSpeedY, 0f);
 
         if (!_dodging)
-            playerCC.Move ((XZMovement + YMovement) * Time.deltaTime);
+            playerCC.Move((XZMovement + YMovement) * Time.deltaTime);
         else
             playerCC.Move(((_lastRecordedDirection * _dodgeSpeed) + YMovement) * Time.deltaTime);
     }
@@ -248,13 +253,15 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator Dodging()
     {
+        _lastRecordedDirection = (_moveInput != Vector3.zero) ? transform.TransformDirection(_moveInput) : transform.TransformDirection(Vector3.back); ;
+
         _dodging = true;
         _canDodgeAgain = false;
 
         yield return new WaitForSeconds(_dodgeTime);
 
         _dodging = false;
-        _currentControllerSpeedXZ /= 2;
+        _currentControllerSpeedXZ = 0f;
 
         yield return new WaitForSeconds(_dodgeCooldown);
 

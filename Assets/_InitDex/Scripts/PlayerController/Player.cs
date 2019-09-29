@@ -6,8 +6,10 @@ public class Player : LivingEntity
 {
     private PlayerController playerController;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+
         playerController = GetComponent<PlayerController>();
     }
 }
