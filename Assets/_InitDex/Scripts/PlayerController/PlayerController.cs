@@ -5,21 +5,29 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
+    #region Variables
 #pragma warning disable 0649
+    #region Controller Components
     [Header("Controller Components")]
+    [SerializeField] private Animator modelAnimator;
+    [SerializeField] private GameObject punch;
+    [SerializeField] private GameObject kick;
+
     private CharacterController playerCC;
     private Camera playerCamera;
-
-    //private Animator modelAnimator;
+    #endregion
 
     [Space(10)]
 
+    #region Player Input
     [Header("Player Input")]
     private Vector3 _moveInput;
     private Vector2 _rotateInput;
+    #endregion
 
     [Space(10)]
 
+    #region Camera Values
     [Header("Camera Values")]
     // Default Axis Clamp. Vector2.x = Min | Vector2.y = Max
     [SerializeField] private Vector2 _cameraOriginalClampX;
@@ -38,20 +46,27 @@ public class PlayerController : MonoBehaviour
     // EULER ANGLES
     private float _cameraRotationX;
     private float _cameraRotationY;
-    private float _cameraRotationZ;  
+    private float _cameraRotationZ;
+    #endregion
 
     [Space(10)]
 
+    #region Constrains
     [Header("Constrains")]
     public bool move;
     public bool rotate;
     public bool jump_dodge;
     public bool attack;
+    #endregion
 
+    #region Player States
     [Header("Player States")]
     [SerializeField] private bool _running;
     [SerializeField] private bool _jumping;
     [SerializeField] private bool _dodging;
+    [SerializeField] private bool _punching;
+    [SerializeField] private bool _kicking;
+
     [SerializeField] private bool _grounded;
 
     protected bool Grounded
@@ -69,7 +84,9 @@ public class PlayerController : MonoBehaviour
             } 
         }
     }
+    #endregion
 
+    #region Controller Speed Values
     [Header("Controller Speed Values", order = 0)]
     [Header("Ground Speed", order = 1)]
     [SerializeField] private float _walkSpeed;
@@ -92,21 +109,22 @@ public class PlayerController : MonoBehaviour
     private float _currentControllerSpeedXZ;
     private float _currentControllerSpeedY;
 
-    private float _currentSelectedSpeed;
-
     private Vector3 _lastRecordedDirection;
-
+    #endregion
 
     [Space(5)]
 
+    #region Dodge Values
     [Header("Dodge Values")]
     [SerializeField] private float _dodgeSpeed;
     [SerializeField] private float _dodgeTime;
     [SerializeField] private float _dodgeCooldown;
     [SerializeField] private bool _canDodgeAgain = true;
+    #endregion
 
     [Space(5)]
 
+    #region Slide and Slope Speed
     /* TO IMPLEMENT
     [Header("Sliding and Slope Speed", order = 4)]
     [SerializeField] private float _slideDeccelerationSpeed;
@@ -115,10 +133,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _slopeSlideDownAccelerationSpeed;
     [SerializeField] private float _slopeSlideUpDeccelerationSpeed;
     */
+    #endregion
 
     [Header("Actions and Events")]
     private Action onGroundedValueChange;
 #pragma warning restore 0649
+    #endregion
 
     // Start is called before the first frame update
     void Start() => StartValuesSet();
@@ -150,14 +170,17 @@ public class PlayerController : MonoBehaviour
     {
         InputUpdate();
         HandleMovement();
+        UpdateHandsAnimations();
     }
 
+    #region Update Methods
     void InputUpdate()
     {
         _moveInput = new Vector3 (Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
         _rotateInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
 
         _jumping = Input.GetButtonDown("Jump");
+        _punching = Input.GetButtonDown("Fire1");
     }
 
     void HandleMovement()
@@ -236,6 +259,20 @@ public class PlayerController : MonoBehaviour
             playerCC.Move(((_lastRecordedDirection * _dodgeSpeed) + YMovement) * Time.deltaTime);
     }
 
+    void Gravity()
+    {
+        // If Controller is in Ground AND not Jumping, apply constant gravity
+        if (Grounded && !_jumping)
+            _currentControllerSpeedY = _gravity * _gravityMultiplier;
+
+        // Else, keep adding acceleration
+        else
+            _currentControllerSpeedY += _gravity * _gravityMultiplier * Time.deltaTime;
+
+        // Clamping Controller Y Speed Values to prevent high falling speeds that might cause clipping
+        _currentControllerSpeedY = Mathf.Clamp(_currentControllerSpeedY, -_maxFallingSpeed, float.MaxValue);
+    }
+
     void Jump()
     {
         if (!Grounded)
@@ -261,25 +298,11 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(_dodgeTime);
 
         _dodging = false;
-        _currentControllerSpeedXZ = 0f;
+        _currentControllerSpeedXZ /= 1.5f;
 
         yield return new WaitForSeconds(_dodgeCooldown);
 
         _canDodgeAgain = true;
-    }
-
-    void Gravity()
-    {
-        // If Controller is in Ground AND not Jumping, apply constant gravity
-        if (Grounded && !_jumping)
-            _currentControllerSpeedY = _gravity * _gravityMultiplier;
-
-        // Else, keep adding acceleration
-        else
-            _currentControllerSpeedY += _gravity * _gravityMultiplier * Time.deltaTime;
-
-        // Clamping Controller Y Speed Values to prevent high falling speeds that might cause clipping
-        _currentControllerSpeedY = Mathf.Clamp(_currentControllerSpeedY, -_maxFallingSpeed, float.MaxValue);
     }
 
     void GroundCheckEvent()
@@ -301,6 +324,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void UpdateHandsAnimations()
+    {
+        if (modelAnimator != null)
+        {
+            modelAnimator.SetFloat("PlayerSpeed", _currentControllerSpeedXZ / _runForwardSpeed);
+
+            if (_punching) modelAnimator.SetTrigger("Punch");
+        }
+    }
+
+    void StartPunch()
+    {
+    }
+    #endregion
 
     private void LateUpdate()
     {
