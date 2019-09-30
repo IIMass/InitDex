@@ -3,8 +3,6 @@
 public class Dummy : LivingEntity
 {
     private Animator dummyAnimator;
-    [SerializeField] private GameObject thisPosition;
-    [SerializeField] private GameObject targetToLook;
 
     // Start is called before the first frame update
     protected override void Start()
