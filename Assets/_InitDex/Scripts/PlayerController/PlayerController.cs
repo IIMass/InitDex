@@ -9,9 +9,8 @@ public class PlayerController : MonoBehaviour
 #pragma warning disable 0649
     #region Controller Components
     [Header("Controller Components")]
-    [SerializeField] private Animator modelAnimator;
-    [SerializeField] private GameObject punch;
-    [SerializeField] private GameObject kick;
+    [SerializeField] private ArmsFPS arms;
+    [SerializeField] private GameObject legs;
 
     private CharacterController playerCC;
     private Camera playerCamera;
@@ -29,6 +28,9 @@ public class PlayerController : MonoBehaviour
 
     #region Camera Values
     [Header("Camera Values")]
+    /*[SerializeField] private bool targetLocking;
+    [SerializeField] private GameObject targetToLock;*/
+
     // Default Axis Clamp. Vector2.x = Min | Vector2.y = Max
     [SerializeField] private Vector2 _cameraOriginalClampX;
     [SerializeField] private Vector2 _cameraOriginalClampY;
@@ -64,8 +66,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool _running;
     [SerializeField] private bool _jumping;
     [SerializeField] private bool _dodging;
-    [SerializeField] private bool _punching;
-    [SerializeField] private bool _kicking;
 
     [SerializeField] private bool _grounded;
 
@@ -148,7 +148,7 @@ public class PlayerController : MonoBehaviour
         // Get Components
         playerCC = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
-        //modelAnimator = GetComponentInChildren<SkinnedMeshRenderer>().GetComponentInParent<Animator>();
+        arms = GetComponentInChildren<ArmsFPS>();
 
         // Lock Mouse
         Cursor.lockState = CursorLockMode.Locked;
@@ -170,7 +170,7 @@ public class PlayerController : MonoBehaviour
     {
         InputUpdate();
         HandleMovement();
-        UpdateHandsAnimations();
+        AnimationsUpdate();
     }
 
     #region Update Methods
@@ -180,7 +180,6 @@ public class PlayerController : MonoBehaviour
         _rotateInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
 
         _jumping = Input.GetButtonDown("Jump");
-        _punching = Input.GetButtonDown("Fire1");
     }
 
     void HandleMovement()
@@ -324,18 +323,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void UpdateHandsAnimations()
+    void AnimationsUpdate()
     {
-        if (modelAnimator != null)
-        {
-            modelAnimator.SetFloat("PlayerSpeed", _currentControllerSpeedXZ / _runForwardSpeed);
-
-            if (_punching) modelAnimator.SetTrigger("Punch");
-        }
-    }
-
-    void StartPunch()
-    {
+        arms.AnimationsControllerUpdate(_currentControllerSpeedXZ, _runForwardSpeed);
     }
     #endregion
 

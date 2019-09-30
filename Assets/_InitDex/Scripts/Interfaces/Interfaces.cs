@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEngine;
 
 public interface IDamagable
 {
@@ -14,10 +15,21 @@ public interface IDamagable
     void Heal(float pointsToHeal, IDamagable targetToHeal);
 
     void RestoreAllHealth();
+}
 
+public interface IRegenerable
+{
     void RegenerateHealth(float pointToHealPerTick, float tickTime, float amountOfTicks, bool keepTryingToRegenAfterMaxHealth);
 
     IEnumerator Regenerating(float pointToHealPerTick, float tickTime, float amountOfTicks, bool keepTryingToRegenAfterMaxHealth);
 
-    void Death();
+    Coroutine RegenCoroutine { get; set; }
+}
+
+public interface IPlayerAction
+{
+    void LeftAttack();
+    void RightAttack();
+
+    void DisarmOrThrow();
 }

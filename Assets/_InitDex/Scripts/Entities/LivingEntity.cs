@@ -1,23 +1,38 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
-public class LivingEntity : MonoBehaviour, IDamagable
+public class LivingEntity : MonoBehaviour, IDamagable, IRegenerable
 {
-    [SerializeField] private float _maxHealth;
+    [SerializeField] protected float _maxHealth;
     public float MaxHealth
     {
         get { return _maxHealth; }
         set { _maxHealth = value; }
     }
 
-    [SerializeField] private float _currentHealth;
+    [SerializeField] protected float _currentHealth;
     public float Health
     {
         get { return _currentHealth; }
         set { _currentHealth = value; }
     }
 
-    Coroutine RegenCoroutine;
+    [SerializeField]
+    protected Coroutine _regenCoroutine;
+    public Coroutine RegenCoroutine
+    {
+        get { return _regenCoroutine; }
+        set
+        {
+            if (_regenCoroutine != value)
+            {
+                _regenCoroutine = value;
+                if (OnRegenEnd != null) OnRegenEnd();
+            }
+        }
+    }
+    protected Action OnRegenEnd;
 
 
     protected virtual void Start()
@@ -45,9 +60,16 @@ public class LivingEntity : MonoBehaviour, IDamagable
 
     public void RegenerateHealth(float pointToHealPerTick, float tickTime, float amountOfTicks, bool keepTryingToRegenAfterMaxHealth)
     {
-        if (RegenCoroutine != null && Health < MaxHealth)
+        if (RegenCoroutine == null)
         {
-            RegenCoroutine = StartCoroutine(Regenerating(pointToHealPerTick, tickTime, amountOfTicks, keepTryingToRegenAfterMaxHealth));
+            if (keepTryingToRegenAfterMaxHealth)
+                RegenCoroutine = StartCoroutine(Regenerating(pointToHealPerTick, tickTime, amountOfTicks, keepTryingToRegenAfterMaxHealth));
+
+            else
+            {
+                if (Health < MaxHealth)
+                    RegenCoroutine = StartCoroutine(Regenerating(pointToHealPerTick, tickTime, amountOfTicks, keepTryingToRegenAfterMaxHealth));
+            }
         }
     }
 
@@ -69,9 +91,13 @@ public class LivingEntity : MonoBehaviour, IDamagable
                     continue;
 
                 else
+                {
+                    RegenCoroutine = null;
                     yield break;
+                }
             }
         }
+        RegenCoroutine = null;
     }
 
 
@@ -95,11 +121,20 @@ public class LivingEntity : MonoBehaviour, IDamagable
             Health = 0f;
             Death();
         }
+        else
+        {
+            EntityHit();
+        }
     }
 
-
-    public void Death()
+    protected virtual void EntityHit()
     {
         //TO OVERRIDE
     }
+
+    protected virtual void Death()
+    {
+        //TO OVERRIDE
+    }
+
 }
