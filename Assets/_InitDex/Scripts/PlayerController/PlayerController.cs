@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject legs;
 
     private CharacterController playerCC;
-    private Camera playerCamera;
+    private CameraLook playerCamera;
     #endregion
 
     [Space(10)]
@@ -21,34 +21,6 @@ public class PlayerController : MonoBehaviour
     #region Player Input
     [Header("Player Input")]
     private Vector3 _moveInput;
-    private Vector2 _rotateInput;
-    #endregion
-
-    [Space(10)]
-
-    #region Camera Values
-    [Header("Camera Values")]
-    /*[SerializeField] private bool targetLocking;
-    [SerializeField] private GameObject targetToLock;*/
-
-    // Default Axis Clamp. Vector2.x = Min | Vector2.y = Max
-    [SerializeField] private Vector2 _cameraOriginalClampX;
-    [SerializeField] private Vector2 _cameraOriginalClampY;
-
-    // Actual Camera Clamp
-    private Vector2 _cameraClampX;
-    private Vector2 _cameraClampY;
-
-    [Space(10)]
-
-    // Pitch (Z Axis) Camera Rotation
-    [SerializeField] private float _cameraPitchRotationAmount;
-    private const float _cameraPitchLerpBack = .1f;
-
-    // EULER ANGLES
-    private float _cameraRotationX;
-    private float _cameraRotationY;
-    private float _cameraRotationZ;
     #endregion
 
     [Space(10)]
@@ -56,13 +28,15 @@ public class PlayerController : MonoBehaviour
     #region Constrains
     [Header("Constrains")]
     public bool move;
-    public bool rotate;
     public bool jump_dodge;
     public bool attack;
     #endregion
 
     #region Player States
     [Header("Player States")]
+    public CombatStatus playerCombatStatus;
+    public enum CombatStatus { Engaging, Peaceful}
+
     [SerializeField] private bool _running;
     [SerializeField] private bool _jumping;
     [SerializeField] private bool _dodging;
@@ -147,15 +121,19 @@ public class PlayerController : MonoBehaviour
     {
         // Get Components
         playerCC = GetComponent<CharacterController>();
-        playerCamera = GetComponentInChildren<Camera>();
+
+        playerCamera = GetComponentInChildren<CameraLook>();
+        // Null Exception Detection
+        if (playerCamera != null && playerCamera.isActiveAndEnabled)
+            PassCameraStartValues();
+
+        else
+            Debug.LogError($"{this} didn't find a Player Camera inside the Controller or the Camera script is disabled!");
+
         arms = GetComponentInChildren<ArmsFPS>();
 
         // Lock Mouse
         Cursor.lockState = CursorLockMode.Locked;
-
-        // Clamp Camera
-        _cameraClampX = _cameraOriginalClampX;
-        _cameraClampY = _cameraOriginalClampY;
 
         // Set Gravity
         _gravity = Physics.gravity.y;
@@ -164,20 +142,30 @@ public class PlayerController : MonoBehaviour
         onGroundedValueChange = GroundCheckEvent;
     }
 
+    void PassCameraStartValues()
+    {
+        playerCamera.localPlayer = this;
+        playerCamera.walkSpeed = _walkSpeed;
+        playerCamera.controllerMaxGroundSpeed = _runForwardSpeed;
+        playerCamera.controllerMaxFallSpeed = _maxFallingSpeed;
+    }
+
 
     // Update is called once per frame
     void Update()
     {
         InputUpdate();
         HandleMovement();
+
+        CameraValuesUpdate();
         AnimationsUpdate();
     }
 
     #region Update Methods
+    #region Controller
     void InputUpdate()
     {
         _moveInput = new Vector3 (Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
-        _rotateInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
 
         _jumping = Input.GetButtonDown("Jump");
     }
@@ -196,6 +184,16 @@ public class PlayerController : MonoBehaviour
                 Dodge();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (playerCombatStatus == CombatStatus.Peaceful)
+                playerCombatStatus = CombatStatus.Engaging;
+
+            else if (playerCombatStatus == CombatStatus.Engaging)
+                playerCombatStatus = CombatStatus.Peaceful;
+
+        }
     }
 
     // Selección de Velocidad (En Suelo y Aire)
@@ -205,39 +203,61 @@ public class PlayerController : MonoBehaviour
         float runAcceleration   = _runAccelerationSpeed * Time.deltaTime;
         float runDecceleration  = _runDeccelerationSpeed * Time.deltaTime;
 
-        // Si el Input es mayor que 0.7, el jugador se moverá en modo Run.
-        _running = (Mathf.Abs(_moveInput.x) > 0.7f || Mathf.Abs(_moveInput.z) > 0.7f) ? true : false;
-
-        // Si está corriendo...
-        if (_running)
-        {
-            // Si está corriendo hacia Adelante...
-            if (_moveInput.z > 0f)
-
-                // Si hay Input en X, aplica la velocidad en Diagonal. Si no hay, aplica la velocidad hacia Delante.
-                _currentControllerSpeedXZ = (_moveInput.x == 0f)
-                                            ? Mathf.MoveTowards(_currentControllerSpeedXZ, _runForwardSpeed, runAcceleration)
-                                            : Mathf.MoveTowards(_currentControllerSpeedXZ, _runPositiveDiagonalSpeed, runAcceleration);
-
-            // Sino, si está yendo hacia Atrás o en otra dirección en X, aplica la velocidad hacia Otras Direcciones.
-            else if (_moveInput.z < 0f || _moveInput.x != 0f)
-                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _runOtherDirectionsSpeed, runAcceleration);
-
-            // Sino, decelera el movimiento.
-            else
-                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, 0f, runDecceleration);
-        }
-
-        // Sino está corriendo...
-        else
+        if (playerCombatStatus == CombatStatus.Engaging)
         {
             // Si se ha detectado cualquier Input de movimiento, aplica la velocidad de andar.
             if (_moveInput != Vector3.zero)
-                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _walkSpeed, runAcceleration);
+                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _runPositiveDiagonalSpeed, runAcceleration * 2);
 
             // Sino, decelera la velocidad del Controlador.
             else
                 _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, 0f, runDecceleration);
+
+        }
+        else if (playerCombatStatus == CombatStatus.Peaceful)
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                _running = false;
+            }
+            else
+            {
+                // Si el Input es mayor que 0.7, el jugador se moverá en modo Run.
+                _running = (Mathf.Abs(_moveInput.x) > 0.7f || Mathf.Abs(_moveInput.z) > 0.7f) ? true : false;
+            }
+
+            // Si está corriendo...
+            if (_running)
+            {
+                // Si está corriendo hacia Adelante...
+                if (_moveInput.z > 0f)
+
+                    // Si hay Input en X, aplica la velocidad en Diagonal. Si no hay, aplica la velocidad hacia Delante.
+                    _currentControllerSpeedXZ = (_moveInput.x == 0f)
+                                                ? Mathf.MoveTowards(_currentControllerSpeedXZ, _runForwardSpeed, runAcceleration)
+                                                : Mathf.MoveTowards(_currentControllerSpeedXZ, _runPositiveDiagonalSpeed, runAcceleration);
+
+                // Sino, si está yendo hacia Atrás o en otra dirección en X, aplica la velocidad hacia Otras Direcciones.
+                else if (_moveInput.z < 0f || _moveInput.x != 0f)
+                    _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _runOtherDirectionsSpeed, runAcceleration);
+
+                // Sino, decelera el movimiento.
+                else
+                    _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, 0f, runDecceleration);
+            }
+
+            // Sino está corriendo...
+            else
+            {
+                // Si se ha detectado cualquier Input de movimiento, aplica la velocidad de andar.
+                if (_moveInput != Vector3.zero)
+                    _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _walkSpeed, runAcceleration);
+
+                // Sino, decelera la velocidad del Controlador.
+                else
+                    _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, 0f, runDecceleration);
+            }
+
         }
     }
 
@@ -322,37 +342,16 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    #endregion
+
+    void CameraValuesUpdate()
+    {
+        playerCamera.ControllerValuesUpdate(_moveInput, _currentControllerSpeedXZ, _currentControllerSpeedY, Grounded);
+    }
 
     void AnimationsUpdate()
     {
         arms.AnimationsControllerUpdate(_currentControllerSpeedXZ, _runForwardSpeed);
     }
     #endregion
-
-    private void LateUpdate()
-    {
-        CameraLook();
-    }
-
-    void CameraLook()
-    {
-        // X Rotation
-        _cameraRotationX = Mathf.Clamp(_cameraRotationX + _rotateInput.x, _cameraOriginalClampX.x, _cameraOriginalClampX.y);
-
-        if (_cameraRotationX >= 360f || _cameraRotationX <= -360f)
-            _cameraRotationX = 0f;
-
-        // Y Rotation
-        _cameraRotationY = Mathf.Clamp(_cameraRotationY + _rotateInput.y, _cameraClampY.x, _cameraClampY.y);
-
-        // Z Rotation
-        if (_moveInput.z > 0f || (_moveInput.x != 0f && _moveInput.z >= 0f))
-            _cameraRotationZ = Mathf.LerpAngle(playerCamera.transform.localEulerAngles.z, _cameraPitchRotationAmount * -_rotateInput.x * _currentControllerSpeedXZ / _runForwardSpeed, _cameraPitchLerpBack);
-        else
-            _cameraRotationZ = Mathf.LerpAngle(playerCamera.transform.localEulerAngles.z, 0f, _cameraPitchLerpBack);
-
-        // Set Camera and Character Controller Rotation
-        playerCamera.transform.localEulerAngles = new Vector3 (-_cameraRotationY, 0f, _cameraRotationZ);
-        transform.localEulerAngles              = new Vector3(0f, _cameraRotationX, 0f);
-    }
 }

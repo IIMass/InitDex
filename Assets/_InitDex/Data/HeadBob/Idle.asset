@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a1751dede6e18d459fafe3921cf3ac2, type: 3}
+  m_Name: Idle
+  m_EditorClassIdentifier: 
+  headbobHorizontalCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.13487485
+      outSlope: 0.13487485
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0
+      outWeight: 0.11666667
+    - serializedVersion: 3
+      time: 0.5
+      value: 0
+      inSlope: -0.13393742
+      outSlope: -0.13393742
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.28183472
+      outWeight: 0.26505697
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0.12257991
+      outSlope: 0.12257991
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.22160804
+      outWeight: 0
+    m_PreInfinity: 1
+    m_PostInfinity: 1
+    m_RotationOrder: 4
+  headbobVerticalCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.15634441
+      outSlope: 0.15634441
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0
+      outWeight: 0.12766603
+    - serializedVersion: 3
+      time: 0.61516005
+      value: 0
+      inSlope: -0.2667662
+      outSlope: -0.2667662
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.4409524
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0.23156638
+      outSlope: 0.23156638
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.32574275
+      outWeight: 0
+    m_PreInfinity: 1
+    m_PostInfinity: 1
+    m_RotationOrder: 4
+  speedCurve: 1
+  bobInterval: 3
+  horizontalInfluence: 0.3
+  verticalInfluence: 1

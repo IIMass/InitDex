@@ -18,6 +18,20 @@ public class ArmsFPS : MonoBehaviour, IPlayerAction
     [SerializeField] private bool Fire1;
     [SerializeField] private bool Fire2;
 
+    [Header("Combo System")]
+    int[] registeredAttacks;
+    int currentArrayIndex;
+
+    public float comboEndTime;
+    private float lastComboPressTime;
+
+    public int[] leftPunch;
+
+    // Left Combo
+    public int[] leftBash;
+
+    // Right Combo
+
     // Start is called before the first frame update
     void Start()
     {
