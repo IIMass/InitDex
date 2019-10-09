@@ -100,6 +100,7 @@ public class CameraLook : MonoBehaviour
 
     [SerializeField] private float cycle;
     [SerializeField] private float smoothBobLerp;
+    [SerializeField] private float smoothLandingBobLerp;
 
     [SerializeField] private bool transitionToNormalHeadbob;
     #endregion
@@ -221,7 +222,12 @@ public class CameraLook : MonoBehaviour
                     cycle = 0f;
                 }
 
-                transform.localPosition = Vector3.Lerp(transform.localPosition, camBob, smoothBobLerp * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, camBob, smoothLandingBobLerp * Time.deltaTime);
+            }
+            else
+            {
+                Vector3 camBob = _originalCameraPos;
+                transform.localPosition = Vector3.Lerp(transform.localPosition, camBob, smoothLandingBobLerp * Time.deltaTime);
             }
         }
     }

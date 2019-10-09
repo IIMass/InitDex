@@ -125,7 +125,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1645607340}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -927199367670048503, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
@@ -135,17 +135,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 8.79778
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.85
+      value: 0.16999996
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 2.4831743
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
@@ -170,7 +170,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
         type: 3}
@@ -2834,13 +2834,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arms: {fileID: 0}
   legs: {fileID: 0}
+  _spacePressed: 0
   move: 0
   jump_dodge: 0
   attack: 0
   playerCombatStatus: 0
   _running: 0
-  _jumping: 0
   _dodging: 0
+  _jumping: 0
   _grounded: 0
   _walkSpeed: 3
   _runForwardSpeed: 7.5
@@ -2849,10 +2850,12 @@ MonoBehaviour:
   _runAccelerationSpeed: 4.5
   _combatWalkAccelerationSpeed: 8
   _runDeccelerationSpeed: 20
-  _jumpImpulse: 5
-  _maxFallingSpeed: 30
   _gravity: 0
   _gravityMultiplier: 2
+  _maxFallingSpeed: 30
+  _jumpImpulse: 6.5
+  _jumpTime: 0
+  _canJumpAgain: 1
   _dodgeSpeed: 15
   _dodgeTime: 0.2
   _dodgeCooldown: 0.5
@@ -2882,7 +2885,7 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 1.8
+  m_Height: 1.6
   m_Radius: 0.3
   m_SlopeLimit: 30.01
   m_StepOffset: 0.3
@@ -3488,9 +3491,9 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
-  m_SensorSize: {x: 36, y: 24}
+  m_SensorSize: {x: 70.41, y: 52.63}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
+  m_FocalLength: 22.080906
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -3499,7 +3502,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 1000
-  field of view: 100
+  field of view: 75
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4854,7 +4857,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1387342146}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0.1}
+  m_LocalPosition: {x: 0, y: 0.505, z: 0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
@@ -4893,6 +4896,7 @@ MonoBehaviour:
   landingBob: {fileID: 11400000, guid: 74b42f8f8e654b84fa837a0e36b13dff, type: 2}
   cycle: 0
   smoothBobLerp: 5
+  smoothLandingBobLerp: 7.5
   transitionToNormalHeadbob: 0
 --- !u!1 &1391024701
 GameObject:
@@ -5359,81 +5363,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1610377158}
   m_CullTransparentMesh: 0
---- !u!4 &1622637974 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 656487d3088839f4ba931873852d2e3c,
-    type: 3}
-  m_PrefabInstance: {fileID: 64384313}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1645607337
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1645607340}
-  - component: {fileID: 1645607339}
-  - component: {fileID: 1645607338}
-  m_Layer: 0
-  m_Name: AI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!195 &1645607338
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1645607337}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0.825
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!136 &1645607339
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1645607337}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.3
-  m_Height: 1.8
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!4 &1645607340
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1645607337}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.79778, y: 1.02, z: 2.4831743}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1622637974}
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1711334852
 GameObject:
   m_ObjectHideFlags: 0
@@ -6021,6 +5950,48 @@ Transform:
   m_Father: {fileID: 946234475}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: -90.00001, y: 0, z: -90.00001}
+--- !u!1 &2066706849 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 656487d3088839f4ba931873852d2e3c,
+    type: 3}
+  m_PrefabInstance: {fileID: 64384313}
+  m_PrefabAsset: {fileID: 0}
+--- !u!195 &2066706851
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066706849}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: -0.02
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!136 &2066706852
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066706849}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &2139638847
 GameObject:
   m_ObjectHideFlags: 0

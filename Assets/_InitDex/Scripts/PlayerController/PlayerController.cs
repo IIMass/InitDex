@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     #region Player Input
     [Header("Player Input")]
     private Vector3 _moveInput;
+    [SerializeField] private bool _spacePressed;
     #endregion
 
     [Space(10)]
@@ -38,9 +39,8 @@ public class PlayerController : MonoBehaviour
     public enum CombatStatus { Engaging, Peaceful}
 
     [SerializeField] private bool _running;
-    [SerializeField] private bool _jumping;
     [SerializeField] private bool _dodging;
-
+    [SerializeField] private bool _jumping;
     [SerializeField] private bool _grounded;
 
     protected bool Grounded
@@ -74,11 +74,11 @@ public class PlayerController : MonoBehaviour
 
     [Space(5)]
 
-    [Header("Jump and Gravity Speed", order = 2)]
-    [SerializeField] private float _jumpImpulse;
-    [SerializeField] private float _maxFallingSpeed;
+    [Header("Gravity Speed", order = 2)]
     [SerializeField] private float _gravity;
     [SerializeField] private float _gravityMultiplier;
+    [SerializeField] private float _maxFallingSpeed;
+
 
     [Header("Current Speed", order = 3)]
     private float _currentControllerSpeedXZ;
@@ -86,6 +86,11 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 _lastRecordedDirection;
     #endregion
+
+    [Header("Jump Values")]
+    [SerializeField] private float _jumpImpulse;
+    [SerializeField] private float _jumpTime;
+    [SerializeField] private bool _canJumpAgain = true;
 
     [Space(5)]
 
@@ -168,7 +173,7 @@ public class PlayerController : MonoBehaviour
     {
         _moveInput = new Vector3 (Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
 
-        _jumping = Input.GetButtonDown("Jump");
+        _spacePressed = Input.GetButtonDown("Jump");
     }
 
     void HandleMovement()
@@ -178,9 +183,14 @@ public class PlayerController : MonoBehaviour
 
         Grounded = playerCC.isGrounded;
 
-        if (_jumping)
+        if (_spacePressed)
         {
-            if (!_dodging && Grounded)
+            if (playerCombatStatus == CombatStatus.Peaceful)
+            {
+                Jump();
+            }
+
+            else if (playerCombatStatus == CombatStatus.Engaging)
             {
                 Dodge();
             }
@@ -296,16 +306,23 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (!Grounded)
+        if (!Grounded || !_canJumpAgain)
             return;
 
         _jumping = true;
+        _canJumpAgain = false;
         _currentControllerSpeedY = _jumpImpulse;
+    }
+
+    IEnumerator JumpCooldown()
+    {
+        yield return new WaitForSeconds(_jumpTime);
+        _canJumpAgain = true;
     }
 
     void Dodge()
     {
-        if (_canDodgeAgain)
+        if (!_dodging && _canDodgeAgain && Grounded)
             StartCoroutine(Dodging());
     }
 
@@ -332,15 +349,16 @@ public class PlayerController : MonoBehaviour
         if (Grounded)
         {
             _jumping = false;
+            StartCoroutine(JumpCooldown());
         }
 
         // Else if the Controller has left the ground, do....
         else
         {
             // If statement done to prevent Jump Force not being applied
-            if (_currentControllerSpeedY < 0f)
+            if (!_jumping && _currentControllerSpeedY < 0f)
             {
-                _currentControllerSpeedY = 0f;
+                _currentControllerSpeedY *= 0.1f;
             }
         }
     }
@@ -348,12 +366,12 @@ public class PlayerController : MonoBehaviour
 
     void CameraValuesUpdate()
     {
-        playerCamera.ControllerValuesUpdate(_moveInput, _currentControllerSpeedXZ, _currentControllerSpeedY, Grounded);
+        playerCamera.ControllerValuesUpdate(_moveInput, playerCC.velocity.magnitude, _currentControllerSpeedY, Grounded);
     }
 
     void AnimationsUpdate()
     {
-        arms.AnimationsControllerUpdate(_currentControllerSpeedXZ, _runForwardSpeed);
+        arms.AnimationsControllerUpdate(playerCC.velocity.magnitude, _runForwardSpeed);
     }
     #endregion
 }
