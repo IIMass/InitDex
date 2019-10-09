@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CameraLook : MonoBehaviour
 {
+#pragma warning disable 0649
     [Header("Camera Components")]
     [HideInInspector] public PlayerController localPlayer;
     [HideInInspector] public Camera localCamera;
@@ -107,6 +108,8 @@ public class CameraLook : MonoBehaviour
     [Header("Camera Shake")]
     private Vector3 shakeToApply;
     #endregion
+#pragma warning restore 0649
+
 
     // Start is called before the first frame update
     void Start()

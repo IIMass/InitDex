@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _runOtherDirectionsSpeed;
 
     [SerializeField] private float _runAccelerationSpeed;
+    [SerializeField] private float _combatWalkAccelerationSpeed;
     [SerializeField] private float _runDeccelerationSpeed;
 
     [Space(5)]
@@ -200,14 +201,15 @@ public class PlayerController : MonoBehaviour
     void SpeedSelection()
     {
         // Floats privados para asignar las aceleraciones con independencia de FPS.
-        float runAcceleration   = _runAccelerationSpeed * Time.deltaTime;
-        float runDecceleration  = _runDeccelerationSpeed * Time.deltaTime;
+        float runAcceleration       = _runAccelerationSpeed * Time.deltaTime;
+        float combatRunAcceleration = _combatWalkAccelerationSpeed * Time.deltaTime;
+        float runDecceleration      = _runDeccelerationSpeed * Time.deltaTime;
 
         if (playerCombatStatus == CombatStatus.Engaging)
         {
             // Si se ha detectado cualquier Input de movimiento, aplica la velocidad de andar.
             if (_moveInput != Vector3.zero)
-                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _runPositiveDiagonalSpeed, runAcceleration * 2);
+                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _runPositiveDiagonalSpeed, combatRunAcceleration);
 
             // Sino, decelera la velocidad del Controlador.
             else
