@@ -81,4 +81,4 @@ MonoBehaviour:
   speedCurve: 1
   bobInterval: 3
   horizontalInfluence: 0.3
-  verticalInfluence: 1
+  verticalInfluence: 0.5
