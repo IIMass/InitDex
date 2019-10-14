@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_InitDex/Scenes/TestScene/PrototypeScene.unity
+    guid: fd61fad12ef31da42ad87d00f4891903
+  - enabled: 1
     path: Assets/_InitDex/Scenes/MassDevRoom/MassDevRoom.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
