@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Player : LivingEntity
+﻿public class Player : LivingEntity
 {
     private PlayerController playerController;
 

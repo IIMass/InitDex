@@ -11,7 +11,7 @@ public class ArmsFPS : MonoBehaviour, IPlayerAction
 
     private Animator armsAnimator;
 
-    [SerializeField] private bool _punching;
+    [SerializeField] public bool _punching;
     [SerializeField] private bool _kicking;
     [SerializeField] private bool _nextAttackAvailable = true;
 

@@ -68,6 +68,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _runPositiveDiagonalSpeed;
     [SerializeField] private float _runOtherDirectionsSpeed;
 
+    [SerializeField] private float _combatSpeed;
+
     [SerializeField] private float _runAccelerationSpeed;
     [SerializeField] private float _combatWalkAccelerationSpeed;
     [SerializeField] private float _runDeccelerationSpeed;
@@ -219,7 +221,7 @@ public class PlayerController : MonoBehaviour
         {
             // Si se ha detectado cualquier Input de movimiento, aplica la velocidad de andar.
             if (_moveInput != Vector3.zero)
-                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _runPositiveDiagonalSpeed, combatRunAcceleration);
+                _currentControllerSpeedXZ = Mathf.MoveTowards(_currentControllerSpeedXZ, _combatSpeed, combatRunAcceleration);
 
             // Sino, decelera la velocidad del Controlador.
             else
