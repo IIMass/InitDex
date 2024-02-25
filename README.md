@@ -1,5 +1,6 @@
-# InitDex
-Small FPS Brawler mixed with fast-paced movement prototype made back in 2019.
+# InitDex - Unity 2019.2.5f1
+Tiny FPS Brawler mixed with fast-paced movement prototype made back in 2019 in my spare time.
+Testing waters learning more about C# and new code design patterns.
 
 -- Main Highlights --
 - Acceleration based Character Controller
